@@ -232,13 +232,36 @@ std::string ASTree::getName() const {
 //  Adds in the includes and profile variables in a main file.
 //
 void ASTree::mainHeader(std::vector<std::string>& profileNames) {
+  std::string mainHeader = "#include \"profile.happ\"\n";
+  ASTree *result = new ASTree();
 
-    //NEED TO IMPLEMENT
-    //Skip down a couple lines.
-    //For each file profile name, add a new node with a profile
-    // declaration.
-    //Also, add in the profile declaration for functions and the
-    //include for profile.hpp
+  ASTree *category = new ASTree(category); //WHERE DOES "CATEGORY" IN THE PARAMETER COME FROM?
+  category->tag = "&lt;category&gt;";  //sets opening xml tag
+  category->closeTag = "&lt;/category&gt;";  //sets closing eml tag
+
+  ASTree *token = new ASTree(token, header); //WHERE DOES "TOKEN" IN THE PARAMETER COME FROM?
+
+  category->child.push_back(token); //adds the token tree as a child of the category tree
+  result->child.push_back(category); //adds the category tree as a child of the result tree
+
+  ASTree *variable = new ASTree(category); //AGAIN WITH CATEGORY
+  variable->tag = "&lt;variable&gt;";  //sets opening xml tag
+  variable->closeTag = "&lt;/variable&gt;";  //sets closing xml tag
+
+  std::string file;
+  std::vector<std::string>::iterator iter = profileNames.begin();
+  while (iter != profileNames.end()) {
+    std::string profileVar = "profile " + *iter;  // adds in "profile <filename with _ >
+    file = *iter;  //sets the string variable "file" to <filename with _ >
+    std::replace(file.begin(), file.end(), '_', '.');  //changes _ back to . in the filename
+    profileVar = profileVar + "(\"" + file + "\");" + '\n'; //adds the replaced filename to the resulting string
+    ASTree *varToken = new ASTree(token, profileVar);
+    variable->child.push_back(varToken);
+    ++iter;
+  }
+
+  child.push_front(variable);
+  child.push_front(result);
 }
 
 
@@ -247,13 +270,36 @@ void ASTree::mainHeader(std::vector<std::string>& profileNames) {
 //
 void ASTree::fileHeader(std::vector<std::string>& profileNames) {
 
-    //NEED TO IMPLEMENT
-    //Skip down a couple lines.
-    //For each file profile name, add a new node with a profile
-    // extern declaration.
-    //Also, add in the extern declaration for functions and the
-    //include for profile.hpp
+//HOW IS FILEHEADER DIFFERENT FROM MAINHEADER??
 
+void ASTree::fileHeader(std::vector<std::string>& profileNames) {
+  std::string mainHeader = "#include \"profile.happ\"\n";
+  ASTree *result = new ASTree();
+
+  ASTree *category = new ASTree(category);
+  category->tag = "&lt;category&gt;";  //sets opening xml tag
+  category->closeTag = "&lt;/category&gt;";  //sets closing eml tag
+
+  ASTree *token = new ASTree(token, header);
+
+  category->child.push_back(token); //adds the token tree as a child of the category tree
+  result->child.push_back(category); //adds the category tree as a child of the result tree
+
+  ASTree *variable = new ASTree(category);
+  variable->tag = "&lt;variable&gt;";  //sets opening xml tag
+  variable->closeTag = "&lt;/variable&gt;";  //sets closing xml tag
+
+  std::vector<std::string>::iterator iter = profileNames.begin();
+  while (iter != profileNames.end()) {
+    std::string profileVar = "extern profile " + *iter + "; \n";
+
+    ASTree *varToken = new ASTree(token, profileVar);
+    variable->child.push_back(varToken);
+    ++iter;
+  }
+
+  child.push_front(variable);
+  child.push_front(result);
 
 }
 
